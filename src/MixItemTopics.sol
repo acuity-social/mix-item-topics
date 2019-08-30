@@ -53,7 +53,7 @@ contract MixItemTopics {
         // Get the itemId. Ensure it does not exist.
         bytes32 itemId = itemStore.getNewItemId(msg.sender, nonce);
         // Ensure the item does not have too many topics.
-        require (itemIdTopicHashes[itemId].length <= 20, "Item cannot be posted to more than 20 topics.");
+        require (itemIdTopicHashes[itemId].length < 20, "Item cannot be posted to more than 20 topics.");
         // Get hash for the topic.
         bytes32 topicHash = keccak256(abi.encodePacked(topic));
         // Store hash in state if it hasn't been already.
