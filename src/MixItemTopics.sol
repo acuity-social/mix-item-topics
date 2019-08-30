@@ -35,6 +35,15 @@ contract MixItemTopics {
     event AddItem(bytes32 indexed topicHash, bytes32 indexed itemId, uint i);
 
     /**
+     * @dev Revert if a topic does not exist.
+     * @param topicHash Hash of the topic.
+     */
+    modifier topicExists(bytes32 topicHash) {
+        require (bytes(hashTopic[topicHash]).length > 0, "Topic does not exist.");
+        _;
+    }
+
+    /**
      * @dev Add an item to a topic. The item must not exist yet.
      * @param topic Topic the item should be added to.
      * @param itemStore The ItemStore contract that will contain the item.
@@ -63,7 +72,7 @@ contract MixItemTopics {
      * @param topicHash Hash of the topic to be retreived.
      * @return The topic.
      */
-    function getTopic(bytes32 topicHash) external view returns (string memory) {
+    function getTopic(bytes32 topicHash) external view topicExists(topicHash) returns (string memory) {
         return hashTopic[topicHash];
     }
 
@@ -89,15 +98,25 @@ contract MixItemTopics {
      * @dev Get some of a topics itemIds.
      * @param topicHash Hash of the topic
      * @param offset Index of the first itemId to retreive.
-     * @param limit Number of itemIds to retrieve.
+     * @param limit Maximum number of itemIds to retrieve.
      * @return The itemIds.
      */
     function getTopicItems(bytes32 topicHash, uint offset, uint limit) external view returns (bytes32[] memory itemIds) {
+        // Get topic itemIds.
+        bytes32[] storage topicItemIds = topicHashItemIds[topicHash];
+        // Check how many itemIds we can retrieve.
+        uint _limit;
+        if (topicItemIds.length < offset + limit) {
+            _limit = topicItemIds.length - offset;
+        }
+        else {
+            _limit = limit;
+        }
         // Allocate memory array.
-        itemIds = new bytes32[](limit);
+        itemIds = new bytes32[](_limit);
         // Populate memory array.
-        for (uint i = 0; i < limit; i++) {
-            itemIds[i] = topicHashItemIds[topicHash][offset + i];
+        for (uint i = 0; i < _limit; i++) {
+            itemIds[i] = topicItemIds[offset + i];
         }
     }
 
