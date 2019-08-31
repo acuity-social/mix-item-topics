@@ -98,7 +98,7 @@ contract MixItemTopics {
      * @param topicHash Hash of the topic.
      * @return The number of items.
      */
-    function getTopicItemCount(bytes32 topicHash) external view returns (uint) {
+    function getTopicItemCount(bytes32 topicHash) external view topicExists(topicHash) returns (uint) {
         return topicHashItemIds[topicHash].length;
     }
 
@@ -107,7 +107,7 @@ contract MixItemTopics {
      * @param topicHash Hash of the topic.
      * @return The itemIds.
      */
-    function getAllTopicItems(bytes32 topicHash) external view returns (bytes32[] memory) {
+    function getAllTopicItems(bytes32 topicHash) external view topicExists(topicHash) returns (bytes32[] memory) {
         return topicHashItemIds[topicHash];
     }
 
@@ -118,7 +118,7 @@ contract MixItemTopics {
      * @param limit Maximum number of itemIds to retrieve.
      * @return The itemIds.
      */
-    function getTopicItems(bytes32 topicHash, uint offset, uint limit) external view returns (bytes32[] memory itemIds) {
+    function getTopicItems(bytes32 topicHash, uint offset, uint limit) external view topicExists(topicHash) returns (bytes32[] memory itemIds) {
         // Get topic itemIds.
         bytes32[] storage topicItemIds = topicHashItemIds[topicHash];
         // Check how many itemIds we can retrieve.

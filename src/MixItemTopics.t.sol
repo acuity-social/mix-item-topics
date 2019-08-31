@@ -181,4 +181,38 @@ contract MixItemTopicsTest is DSTest {
         mixItemTopics.getTopic(topicHash);
     }
 
+    function testControlGetTopicItemCountDoesntExist() public {
+        bytes32 topicHash = mixItemTopics.createTopic("topic0");
+        mixItemTopics.getTopicItemCount(topicHash);
+    }
+
+    function testFailGetTopicItemCountDoesntExist() public view {
+        bytes32 topicHash = hex"1234";
+        mixItemTopics.getTopicItemCount(topicHash);
+    }
+
+    function testControlGetAllTopicItemsDoesntExist() public {
+        bytes32 topicHash = mixItemTopics.createTopic("topic0");
+        mixItemTopics.getAllTopicItems(topicHash);
+    }
+
+    function testFailGetAllTopicItemsDoesntExist() public view {
+        bytes32 topicHash = hex"1234";
+        mixItemTopics.getAllTopicItems(topicHash);
+    }
+
+    function testControlGetTopicItemsDoesntExist() public {
+        bytes32 topicHash = mixItemTopics.createTopic("topic0");
+        mixItemTopics.getAllTopicItems(topicHash);
+    }
+
+    function testFailGetTopicItemsDoesntExist() public view {
+        bytes32 topicHash = hex"1234";
+        mixItemTopics.getTopicItems(topicHash, 0, 0);
+    }
+
+    function testGetTopicItems() public {
+
+    }
+
 }
