@@ -203,7 +203,7 @@ contract MixItemTopicsTest is DSTest {
 
     function testControlGetTopicItemsDoesntExist() public {
         bytes32 topicHash = mixItemTopics.createTopic("topic0");
-        mixItemTopics.getAllTopicItems(topicHash);
+        mixItemTopics.getTopicItems(topicHash, 0, 0);
     }
 
     function testFailGetTopicItemsDoesntExist() public view {
