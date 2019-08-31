@@ -70,7 +70,6 @@ contract MixItemTopicsTest is DSTest {
         mixItemTopics.addItem(topicHash, mixItemStore, bytes2(0x0001));
     }
 
-
     function testControlAddItemTooManyTopics() public {
         mixItemTopics.addItem(mixItemTopics.createTopic("topic00"), mixItemStore, bytes2(0x0001));
         mixItemTopics.addItem(mixItemTopics.createTopic("topic01"), mixItemStore, bytes2(0x0001));
@@ -120,6 +119,7 @@ contract MixItemTopicsTest is DSTest {
 
     function testAddItem() public {
         bytes32 topicHash0 = mixItemTopics.createTopic("topic0");
+        assertEq0(bytes(mixItemTopics.getTopic(topicHash0)), bytes("topic0"));
         mixItemTopics.addItem(topicHash0, mixItemStore, bytes2(0x0000));
         bytes32 itemId0 = mixItemStore.create(bytes2(0x0000), hex"1234");
         assertEq(mixItemTopics.getTopicItemCount(topicHash0), 1);
@@ -151,6 +151,7 @@ contract MixItemTopicsTest is DSTest {
         assertEq(topicHashes[0], topicHash0);
 
         bytes32 topicHash1 = mixItemTopics.createTopic("topic1");
+        assertEq0(bytes(mixItemTopics.getTopic(topicHash1)), bytes("topic1"));
         mixItemTopics.addItem(topicHash1, mixItemStore, bytes2(0x0003));
         mixItemTopics.addItem(topicHash1, mixItemStore, bytes2(0x0004));
         bytes32 itemId3 = mixItemStore.create(bytes2(0x0003), hex"1234");
@@ -168,6 +169,16 @@ contract MixItemTopicsTest is DSTest {
         topicHashes = mixItemTopics.getItemTopicHashes(itemId4);
         assertEq(topicHashes.length, 1);
         assertEq(topicHashes[0], topicHash1);
+    }
+
+    function testControlGetTopicDoesntExist() public {
+        bytes32 topicHash = mixItemTopics.createTopic("topic0");
+        mixItemTopics.getTopic(topicHash);
+    }
+
+    function testFailGetTopicDoesntExist() public view {
+        bytes32 topicHash = hex"1234";
+        mixItemTopics.getTopic(topicHash);
     }
 
 }
