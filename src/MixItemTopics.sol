@@ -1,7 +1,6 @@
 pragma solidity ^0.5.11;
 
 import "mix-item-store/MixItemStoreInterface.sol";
-import "mix-item-store/MixItemStoreRegistry.sol";
 
 
 /**
@@ -27,6 +26,13 @@ contract MixItemTopics {
     mapping (bytes32 => bytes32[]) itemIdTopicHashes;
 
     /**
+     * @dev A topic has been created.
+     * @param topicHash Hash of the topic.
+     * @param topic The topic.
+     */
+    event CreateTopic(bytes32 indexed topicHash, string topic);
+
+    /**
      * @dev An item has been added to a topic.
      * @param topicHash Hash of the topic.
      * @param itemId itemId of the item added.
@@ -44,22 +50,33 @@ contract MixItemTopics {
     }
 
     /**
+     * @dev Creates a new topic.
+     * @param topic The topic that should be created.
+     * @return topicHash The hash of the topic.
+     */
+    function createTopic(string calldata topic) external returns (bytes32 topicHash) {
+        // Get hash for the topic.
+        topicHash = keccak256(bytes(topic));
+        // Check if this topic has already been created.
+        if (bytes(hashTopic[topicHash]).length == 0) {
+            // Store hash in state.
+            hashTopic[topicHash] = topic;
+            // Log the event.
+            emit CreateTopic(topicHash, topic);
+        }
+    }
+
+    /**
      * @dev Add an item to a topic. The item must not exist yet.
-     * @param topic Topic the item should be added to.
+     * @param topicHash Hash of the topic the item should be added to.
      * @param itemStore The ItemStore contract that will contain the item.
      * @param nonce The nonce that will be used to create the item.
      */
-    function addItem(string calldata topic, MixItemStoreInterface itemStore, bytes32 nonce) external {
+    function addItem(bytes32 topicHash, MixItemStoreInterface itemStore, bytes32 nonce) external topicExists(topicHash) {
         // Get the itemId. Ensure it does not exist.
         bytes32 itemId = itemStore.getNewItemId(msg.sender, nonce);
         // Ensure the item does not have too many topics.
         require (itemIdTopicHashes[itemId].length < 20, "Item cannot be posted to more than 20 topics.");
-        // Get hash for the topic.
-        bytes32 topicHash = keccak256(abi.encodePacked(topic));
-        // Store hash in state if it hasn't been already.
-        if (bytes(hashTopic[topicHash]).length == 0) {
-            hashTopic[topicHash] = topic;
-        }
         // Store mappings.
         topicHashItemIds[topicHash].push(itemId);
         itemIdTopicHashes[itemId].push(topicHash);
