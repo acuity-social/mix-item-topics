@@ -121,9 +121,13 @@ contract MixItemTopics {
     function getTopicItems(bytes32 topicHash, uint offset, uint limit) external view topicExists(topicHash) returns (bytes32[] memory itemIds) {
         // Get topic itemIds.
         bytes32[] storage topicItemIds = topicHashItemIds[topicHash];
+        // Check if offset is beyond the end of the array.
+        if (offset >= topicItemIds.length) {
+            return new bytes32[](0);
+        }
         // Check how many itemIds we can retrieve.
         uint _limit;
-        if (topicItemIds.length < offset + limit) {
+        if (offset + limit > topicItemIds.length) {
             _limit = topicItemIds.length - offset;
         }
         else {
