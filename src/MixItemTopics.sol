@@ -50,6 +50,16 @@ contract MixItemTopics {
     }
 
     /**
+     * @dev Revert if a specific topic item does not exist.
+     * @param topicHash Hash of the topic.
+     * @param i Index of the item.
+     */
+    modifier topicItemExists(bytes32 topicHash, uint i) {
+        require (i < topicHashItemIds[topicHash].length, "Topic item does not exist.");
+        _;
+    }
+
+    /**
      * @dev Creates a new topic.
      * @param topic The topic that should be created.
      * @return topicHash The hash of the topic.
@@ -103,6 +113,16 @@ contract MixItemTopics {
     }
 
     /**
+     * @dev Get a specific topic item.
+     * @param topicHash Hash of the topic.
+     * @param i Index of the item.
+     * @return itemId itemId of the topic item.
+     */
+    function getTopicItem(bytes32 topicHash, uint i) external view topicItemExists(topicHash, i) returns (bytes32) {
+        return topicHashItemIds[topicHash][i];
+    }
+
+    /**
      * @dev Get the all of a topic's itemIds.
      * @param topicHash Hash of the topic.
      * @return The itemIds.
@@ -112,13 +132,13 @@ contract MixItemTopics {
     }
 
     /**
-     * @dev Get some of a topics itemIds.
+     * @dev Query a topic's itemIds.
      * @param topicHash Hash of the topic
      * @param offset Index of the first itemId to retreive.
      * @param limit Maximum number of itemIds to retrieve.
      * @return The itemIds.
      */
-    function getTopicItems(bytes32 topicHash, uint offset, uint limit) external view topicExists(topicHash) returns (bytes32[] memory itemIds) {
+    function getTopicItemsByQuery(bytes32 topicHash, uint offset, uint limit) external view topicExists(topicHash) returns (bytes32[] memory itemIds) {
         // Get topic itemIds.
         bytes32[] storage topicItemIds = topicHashItemIds[topicHash];
         // Check if offset is beyond the end of the array.
